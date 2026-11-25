@@ -3,6 +3,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js) - GA4: G-CRSFFRXWJ0 + G-10Y59ECPDC (carried over from the Webflow site) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CRSFFRXWJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CRSFFRXWJ0');
+  gtag('config', 'G-10Y59ECPDC');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>What Can Your Budget Build? | Corestone</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@500;600;700&family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -306,6 +315,8 @@
 
   var STORE_KEY = "corestone-quiz-v1";
   var SUBMIT_KEY = "corestone-quiz-submission";
+  var QUIZ_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwtCeFk6SfEy_RjtaJu_yvu7anQRU8HyuJ0EDZ9bHRQt17kCcjWkb9MDc2NLeZpiyWQhg/exec';
+  var QUIZ_TOKEN = '08ee3b92e3a5ce90feabef7e339008119a7776c22e424f3d';
 
   var SCREENS = ["welcome", "q1", "q2", "q3", "q4", "q5", "q6", "capture", "result"];
   var QUESTION_SCREENS = ["q1", "q2", "q3", "q4", "q5", "q6"];
@@ -497,6 +508,13 @@
       submittedAt: new Date().toISOString()
     };
     try { localStorage.setItem(SUBMIT_KEY, JSON.stringify(submission)); } catch (e) {}
+    try {
+      fetch(QUIZ_ENDPOINT, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain'},
+        body: JSON.stringify({token: QUIZ_TOKEN, type: 'quiz', name: name, email: email, answers: state.answers, tier: computeTier().title})
+      }).catch(function(){});
+    } catch (e) {}
 
     renderResult();
     show("result");

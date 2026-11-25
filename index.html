@@ -2,6 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js) - GA4: G-CRSFFRXWJ0 + G-10Y59ECPDC (carried over from the Webflow site) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CRSFFRXWJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CRSFFRXWJ0');
+  gtag('config', 'G-10Y59ECPDC');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Corestone Developers | Luxury Home Builders, Sullivan & Orange County NY</title>
 <meta name="description" content="Luxury custom home builder in Sullivan County and Orange County NY. Custom home builds, development, and commercial projects with open-book pricing.">
@@ -720,8 +729,7 @@
         <p><b>Office:</b> 43 Sullivan Ave, Liberty, NY 12754</p>
         <p><b>WhatsApp:</b> <a href="https://wa.me/9294201008?text=Hi,%20I%20wanna%20inquire%20about%20my%20new%20construction%20project">Message us</a></p>
       </div>
-      <!-- Preview only: wire this form to the lead inbox + tracker before launch, same pattern as the Beatrice landing page. -->
-      <form onsubmit="event.preventDefault(); document.getElementById('formDone').hidden=false; this.reset();">
+      <form id="quoteForm" novalidate>
         <div class="row">
           <div><label for="f-name">Name</label><input id="f-name" type="text" required autocomplete="name"></div>
           <div><label for="f-phone">Phone</label><input id="f-phone" type="tel" required autocomplete="tel"></div>
@@ -731,12 +739,59 @@
         <label for="f-msg">About your project</label><textarea id="f-msg" rows="4" placeholder="Lot location, rough size, budget range, timeline..."></textarea>
         <button class="btn" type="submit">Request a quote</button>
         <p class="fine" id="formDone" hidden>Thanks, we have it. A real person replies to every request.</p>
+        <p class="fine" id="formErr" hidden style="color:#b3261e;"></p>
         <p class="fine">No spam, no obligation. Your details go to the Corestone team only.</p>
       </form>
     </div>
   </div>
 </section>
 
+<script>
+(function(){
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwtCeFk6SfEy_RjtaJu_yvu7anQRU8HyuJ0EDZ9bHRQt17kCcjWkb9MDc2NLeZpiyWQhg/exec';
+  var TOKEN = '08ee3b92e3a5ce90feabef7e339008119a7776c22e424f3d';
+  var form = document.getElementById('quoteForm');
+  var done = document.getElementById('formDone');
+  var err = document.getElementById('formErr');
+  var btn = form.querySelector('button[type="submit"]');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = document.getElementById('f-name').value.trim();
+    var phone = document.getElementById('f-phone').value.trim();
+    var email = document.getElementById('f-email').value.trim();
+    var company = document.getElementById('f-company').value.trim();
+    var msg = document.getElementById('f-msg').value.trim();
+    if (!name || !phone || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      err.textContent = 'Please add your name, phone, and a valid email.';
+      err.hidden = false;
+      return;
+    }
+    err.hidden = true;
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({token: TOKEN, type: 'quote', name: name, phone: phone, email: email, company: company, message: msg})
+    }).then(function(r){ return r.json(); }).then(function(d){
+      btn.textContent = 'Request a quote';
+      btn.disabled = false;
+      if (d && d.ok) {
+        done.hidden = false;
+        form.reset();
+      } else {
+        err.textContent = 'That did not go through. Check your connection and try again, or call 845-747-0244.';
+        err.hidden = false;
+      }
+    }).catch(function(){
+      btn.textContent = 'Request a quote';
+      btn.disabled = false;
+      err.textContent = 'That did not go through. Check your connection and try again, or call 845-747-0244.';
+      err.hidden = false;
+    });
+  });
+})();
+</script>
 <footer class="site">
   <div class="wrap">
     <div class="cols">
@@ -762,7 +817,6 @@
     </div>
     <div class="legal">
       <span>© 2026 Corestone Developers. All rights reserved.</span>
-      <span>Preview v3 build (Nov 5 updates), not yet live.</span>
     </div>
   </div>
 </footer>
@@ -797,7 +851,7 @@ document.querySelectorAll('.ss').forEach(function(box){
 </div>
 <script>
 (function(){
-  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzT6_-2harIBANSlYox_FgMnjkj3VeXt_p16IhQyoxPIVBGGo7-1j9JO_XezbO6dq9S/exec';
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwtCeFk6SfEy_RjtaJu_yvu7anQRU8HyuJ0EDZ9bHRQt17kCcjWkb9MDc2NLeZpiyWQhg/exec';
   var TOKEN = '08ee3b92e3a5ce90feabef7e339008119a7776c22e424f3d';
   var KEY = 'corestone_lead_v1';
   var gate = document.getElementById('gate');
